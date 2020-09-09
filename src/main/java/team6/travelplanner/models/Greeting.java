@@ -1,14 +1,23 @@
 package team6.travelplanner.models;
 
+import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.io.Serializable;
+
+@Data
+@EqualsAndHashCode
+@NoArgsConstructor
+@Entity
+@RequiredArgsConstructor
 public class Greeting {
+    @NonNull
+    private  String content;
 
-    private final String content;
-
-    public Greeting(String content) {
-        this.content = content;
-    }
-
-    public String getContent() {
-        return content;
-    }
+    @Id
+    @GeneratedValue
+    private long id;
 }
