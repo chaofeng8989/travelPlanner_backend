@@ -17,15 +17,9 @@ public class GreetingController {
 
     @Autowired
     GreetingRepository repository;
-    @GetMapping("/{name}")
+    @GetMapping("/greeting/{name}")
     public Greeting greeting(@PathVariable String name) {
         Greeting g =  new Greeting(String.format(template, name));
-        repository.save(g);
-        return g;
-    }
-    @GetMapping("/")
-    public Greeting greeting(@PathVariable Optional<String> name) {
-        Greeting g =  new Greeting(String.format(template, "world"));
         repository.save(g);
         return g;
     }
