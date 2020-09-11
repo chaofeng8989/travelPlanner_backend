@@ -20,12 +20,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        System.out.println("in auth config");
         auth.userDetailsService(userDetailsService()).passwordEncoder(getPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().hasAnyRole("ADMIN", "USER")
+        http.authorizeRequests().antMatchers("/register").permitAll()
+                .anyRequest().hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
                 .and()

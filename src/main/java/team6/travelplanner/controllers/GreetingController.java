@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import team6.travelplanner.models.Greeting;
 import team6.travelplanner.models.GreetingRepository;
 
-import java.util.Optional;
-
 @RestController
 public class GreetingController {
 

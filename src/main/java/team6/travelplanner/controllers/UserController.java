@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team6.travelplanner.models.User;
 import team6.travelplanner.models.UserRepository;
 
@@ -17,8 +14,9 @@ public class UserController {
     UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestParam @Validated User user) {
+    public ResponseEntity register(@RequestBody User user) {
         userRepository.save(user);
+        System.out.println("in " + user.toString());
         return ResponseEntity.accepted().build();
     }
 }

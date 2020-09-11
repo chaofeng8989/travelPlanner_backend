@@ -2,13 +2,11 @@ package team6.travelplanner.models;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Data
+@Table(name = "userprofile")
 public class User {
     @Id
     @GeneratedValue
