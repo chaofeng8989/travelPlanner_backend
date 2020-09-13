@@ -19,6 +19,11 @@ public class GreetingController {
 
     @Autowired
     MapClient mapClient;
+
+    @GetMapping("/")
+    public String root() {
+        return "try /nearbyPlaces?lat={lat}&lon={lon} to get nearby places";
+    }
     @GetMapping("/greeting/{name}")
     public Greeting greeting(@PathVariable String name) {
         Greeting g =  new Greeting(String.format(template, name));
