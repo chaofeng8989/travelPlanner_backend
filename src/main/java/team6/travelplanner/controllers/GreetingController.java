@@ -5,10 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import team6.travelplanner.googleClient.MapClient;
 import team6.travelplanner.models.Greeting;
 import team6.travelplanner.models.GreetingRepository;
-
-import java.util.Optional;
 
 @RestController
 public class GreetingController {
@@ -17,15 +16,12 @@ public class GreetingController {
 
     @Autowired
     GreetingRepository repository;
-    @GetMapping("/{name}")
+
+    @Autowired
+    MapClient mapClient;
+    @GetMapping("/greeting/{name}")
     public Greeting greeting(@PathVariable String name) {
         Greeting g =  new Greeting(String.format(template, name));
-        repository.save(g);
-        return g;
-    }
-    @GetMapping("/")
-    public Greeting greeting(@PathVariable Optional<String> name) {
-        Greeting g =  new Greeting(String.format(template, "world"));
         repository.save(g);
         return g;
     }
@@ -33,6 +29,7 @@ public class GreetingController {
     public Greeting greetingWithParam(@RequestParam(value = "name", defaultValue = "World") String name) {
         Greeting g = new Greeting(String.format(template, name));
         repository.save(g);
+        mapClient.getNearbyPlaces(47.608013,  -122.335167);
         return g;
     }
 }
