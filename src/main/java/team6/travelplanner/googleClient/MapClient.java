@@ -6,14 +6,10 @@ import com.google.maps.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import team6.travelplanner.Vault;
-import team6.travelplanner.models.Photo;
-import team6.travelplanner.models.PhotoRepository;
 import team6.travelplanner.models.Place;
 import team6.travelplanner.models.PlaceRepository;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,8 +19,6 @@ public class MapClient {
             .apiKey(Vault.googleAPIKEY)
             .build();
 
-    @Autowired
-    PhotoRepository photoRepository;
     @Autowired
     PlaceRepository placeRepository;
 
@@ -38,10 +32,11 @@ public class MapClient {
                                             .nearbySearchNextPage(context, nextPageToken)
                                             .await();
             for (PlacesSearchResult place : placesSearchResponse.results) {
-                places.add(getPlaceDetails(place.placeId));
+                places.add(Place.getPlaceFromPlacesSearchResult(place));
             }
-            System.out.println(placesSearchResponse.nextPageToken);
 
+            System.out.println(placesSearchResponse.nextPageToken);
+            writeDatabase(places);
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -68,8 +63,10 @@ public class MapClient {
                     .type(PlaceType.TOURIST_ATTRACTION)
                     .await();
             for (PlacesSearchResult place : placesSearchResponse.results) {
-                places.add(getPlaceDetails(place.placeId));
+                places.add(Place.getPlaceFromPlacesSearchResult(place));
             }
+            System.out.println(places);
+            writeDatabase(places);
             System.out.println(placesSearchResponse.nextPageToken);
         } catch (ApiException e) {
             e.printStackTrace();
@@ -82,31 +79,13 @@ public class MapClient {
     }
 
     public Place getPlaceDetails(String placeId) {
-        Place place = null;
-        if (placeRepository.existsById(placeId)) {
-            return placeRepository.getOne(placeId);
-        }
+        Place place = placeRepository.getOne(placeId);
         try {
             PlaceDetails placeDetails = null;
             placeDetails = PlacesApi.placeDetails(context, placeId).await();
-            place = Place.getPlaceFromPlaceDetails(placeDetails);
-            String photoReference = placeDetails.photos[0].photoReference;
-            Photo photo = null;
-            if (photoRepository.existsById(photoReference)) {
-                photo = photoRepository.getOne(photoReference);
-            } else {
-                photo = new Photo();
-                photo.setPhotoReference(photoReference);
-                photo.setHeight(600);
-                photo.setWidth(600);
-
-                // save file to local, only for debug
-                ImageResult r = getImage(photoReference, 600, 600);
-                Files.write(Path.of("src/main/resources/"+placeDetails.name+".jpeg"), r.imageData);
-                photoRepository.save(photo);
-            }
-            place.addPhoto(photo);
-            placeRepository.save(place);
+            System.out.println(placeDetails);
+            place.addDetails(placeDetails);
+            writeDatabase(place);
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -115,6 +94,23 @@ public class MapClient {
             e.printStackTrace();
         }
         return place;
+    }
+
+    private void writeDatabase(Set<Place> places) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                places.stream().forEach(place -> placeRepository.save(place));
+            }
+        }).start();
+    }
+    private void writeDatabase(Place place) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                placeRepository.save(place);
+            }
+        }).start();
     }
 
     public ImageResult getImage(String photoReference, int width, int height) {
@@ -134,15 +130,6 @@ public class MapClient {
         }
         return p;
     }
-    public String getImageURL(Photo photo) {
-
-        return Photo.getURL(photo);
-    }
 
 
-    public static void main(String[] args) {
-        MapClient client = new MapClient();
-        Set<Place> response = client.getNearbyPlaces(47.608013,  -122.335167);
-        System.out.println(response);
-    }
 }
