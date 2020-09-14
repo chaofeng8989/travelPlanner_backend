@@ -38,8 +38,6 @@ public class Photo {
     @Override    @JsonValue
 
     public String toString() {
-        return "Photo{" +
-                "url='" + url + '\'' +
-                '}';
+        return url;
     }
 }
