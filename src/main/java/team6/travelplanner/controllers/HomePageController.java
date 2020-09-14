@@ -10,7 +10,7 @@ import team6.travelplanner.models.Greeting;
 import team6.travelplanner.models.GreetingRepository;
 
 @RestController
-public class GreetingController {
+public class HomePageController {
 
     private static final String template = "Hello, %s!";
 
@@ -22,7 +22,9 @@ public class GreetingController {
 
     @GetMapping("/")
     public String root() {
-        return "try /nearbyPlaces?lat={lat}&lon={lon} to get nearby places";
+        return "try /place/search?lat={lat}&lon={lon} to get nearby places\n"
+                +"/place/placeId to get placeDetails\n"
+                +"/place/search?nextPageToken={nextPageToken} to getnextpage";
     }
     @GetMapping("/greeting/{name}")
     public Greeting greeting(@PathVariable String name) {

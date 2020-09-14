@@ -1,9 +1,13 @@
 package team6.travelplanner.models;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.maps.model.PlacesSearchResult;
 import lombok.Data;
+import org.springframework.data.jpa.repository.Modifying;
+import team6.travelplanner.Vault;
 
 import javax.persistence.*;
 import java.net.URL;
@@ -12,7 +16,8 @@ import java.util.Set;
 
 @Data
 @Entity
-@JsonSerialize
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Place {
     String formattedAddress;
     String formattedPhoneNumber;
@@ -28,29 +33,38 @@ public class Place {
     String vicinity;
     URL website;
 
-    @OneToMany
-    @JoinColumn
 
+    @JoinColumn @OneToMany(cascade = CascadeType.ALL) @JsonSerialize
     Set<Photo> photos = new HashSet<>();
-    public void addPhoto(Photo p) {
-        photos.add(p);
+
+
+    public void addDetails(com.google.maps.model.PlaceDetails placeDetails) {
+        formattedAddress = placeDetails.formattedAddress;
+        formattedPhoneNumber = placeDetails.formattedPhoneNumber;
+        icon = placeDetails.icon;
+        internationalPhoneNumber = placeDetails.internationalPhoneNumber;
+        name = placeDetails.name;
+        placeId = placeDetails.placeId;
+        userRatingsTotal = placeDetails.userRatingsTotal;
+        rating = placeDetails.rating;
+        vicinity = placeDetails.vicinity;
+        website = placeDetails.website;
+        for (com.google.maps.model.Photo photo : placeDetails.photos) {
+            photos.add(new Photo(photo));
+        }
     }
 
-    public static Place getPlaceFromPlaceDetails(com.google.maps.model.PlaceDetails placeDetails) {
+    public static Place getPlaceFromPlacesSearchResult(PlacesSearchResult result) {
         Place place = new Place();
-        place.formattedAddress = placeDetails.formattedAddress;
-        place.formattedPhoneNumber = placeDetails.formattedPhoneNumber;
-        place.icon = placeDetails.icon;
-        place.internationalPhoneNumber = placeDetails.internationalPhoneNumber;
-        place.name = placeDetails.name;
-        place.placeId = placeDetails.placeId;
-        place.userRatingsTotal = placeDetails.userRatingsTotal;
-        place.rating = placeDetails.rating;
-        place.vicinity = placeDetails.vicinity;
-        place.website = placeDetails.website;
-        //place.priceLevel = placeDetails.priceLevel.toString();
+        place.formattedAddress = result.formattedAddress;
+        place.name = result.name;
+        place.icon = result.icon;
+        place.placeId = result.placeId;
+        place.rating = result.rating;
+        for (com.google.maps.model.Photo photo : result.photos) {
+            place.photos.add(new Photo(photo));
+        }
         return place;
-
     }
 
 }
