@@ -1,41 +1,51 @@
 package team6.travelplanner.googleClient;
 
-import com.google.maps.*;
+import com.google.maps.GeoApiContext;
+import com.google.maps.ImageResult;
+import com.google.maps.PlacesApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import team6.travelplanner.Vault;
+import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
 import team6.travelplanner.models.PlaceRepository;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
+
+import static team6.travelplanner.Vault.GOOGLE_APIKEY;
 
 @Component
+@Slf4j
 public class MapClient {
     GeoApiContext context = new GeoApiContext.Builder()
-            .apiKey(Vault.googleAPIKEY)
+            .apiKey(GOOGLE_APIKEY)
             .build();
 
     @Autowired
     PlaceRepository placeRepository;
 
-
-
-    public Set<Place> getNearbyPlacesNextPage(String nextPageToken) {
+    /**
+     * @param nextPageToken
+     * @return
+     */
+    public PagedResponse getNearbyPlacesNextPage(String nextPageToken) {
+        PagedResponse res = new PagedResponse();
         Set<Place> places = new HashSet<>();
-
         try {
             PlacesSearchResponse placesSearchResponse = PlacesApi
-                                            .nearbySearchNextPage(context, nextPageToken)
-                                            .await();
+                    .nearbySearchNextPage(context, nextPageToken)
+                    .await();
             for (PlacesSearchResult place : placesSearchResponse.results) {
                 places.add(Place.getPlaceFromPlacesSearchResult(place));
             }
-
-            System.out.println(placesSearchResponse.nextPageToken);
+            res.setEntity(places);
+            res.setNextPageToken(nextPageToken);
             writeDatabase(places);
         } catch (ApiException e) {
             e.printStackTrace();
@@ -44,27 +54,23 @@ public class MapClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return places;
+
+        return res;
     }
 
-
-    public Set<Place> getNearbyPlaces(double lat, double lng) {
+    public PagedResponse getNearbyPlaces(double lat, double lng) {
+        PagedResponse res = new PagedResponse();
         Set<Place> places = new HashSet<>();
-
         try {
             PlacesSearchResponse placesSearchResponse = null;
-
             LatLng location = new LatLng(lat, lng);
             placesSearchResponse = PlacesApi.nearbySearchQuery(context, location)
-                    .radius(5000)
-                    .type(PlaceType.AMUSEMENT_PARK)
-                    .type(PlaceType.AQUARIUM)
-                    .type(PlaceType.ART_GALLERY)
-                    .type(PlaceType.TOURIST_ATTRACTION)
-                    .await();
+                    .radius(5000).type(PlaceType.TOURIST_ATTRACTION).await();
             for (PlacesSearchResult place : placesSearchResponse.results) {
                 places.add(Place.getPlaceFromPlacesSearchResult(place));
             }
+            res.setEntity(places);
+            res.setNextPageToken(placesSearchResponse.nextPageToken);
             System.out.println(places);
             writeDatabase(places);
             System.out.println(placesSearchResponse.nextPageToken);
@@ -75,7 +81,8 @@ public class MapClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return places;
+
+        return res;
     }
 
     public Place getPlaceDetails(String placeId) {
@@ -83,7 +90,7 @@ public class MapClient {
         try {
             PlaceDetails placeDetails = null;
             placeDetails = PlacesApi.placeDetails(context, placeId).await();
-            System.out.println(placeDetails);
+            log.info(placeDetails.toString());
             place.addDetails(placeDetails);
             writeDatabase(place);
         } catch (ApiException e) {
@@ -104,6 +111,7 @@ public class MapClient {
             }
         }).start();
     }
+
     private void writeDatabase(Place place) {
         new Thread(new Runnable() {
             @Override
@@ -120,7 +128,6 @@ public class MapClient {
                     .maxWidth(width)
                     .maxHeight(height)
                     .await();
-            System.out.println("    " + p);
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -130,6 +137,4 @@ public class MapClient {
         }
         return p;
     }
-
-
 }

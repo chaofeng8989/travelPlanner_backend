@@ -2,10 +2,7 @@ package team6.travelplanner.models;
 
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import team6.travelplanner.Vault;
 
 import javax.persistence.Entity;
@@ -29,7 +26,7 @@ public class Photo {
                 +"&maxwidth=" + photo.width
                 +"&maxheight=" + photo.height
                 +"&photoreference=" + photo.photoReference
-                +"&key=" + Vault.googleAPIKEY;
+                +"&key=" + Vault.GOOGLE_APIKEY;
         photoReference = photo.photoReference;
         width = photo.width;
         height = photo.height;
