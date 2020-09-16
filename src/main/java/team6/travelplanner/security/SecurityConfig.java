@@ -33,13 +33,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-//                .httpBasic().and().authorizeRequests().antMatchers("/register").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin()
-//                .and()
-//                .logout().permitAll().logoutSuccessUrl("/login")
-//                .and()
+                .httpBasic().and().authorizeRequests().antMatchers("/register").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .and()
+                .logout().permitAll().logoutSuccessUrl("/login")
+                .and()
                 .csrf().disable();
     }
 

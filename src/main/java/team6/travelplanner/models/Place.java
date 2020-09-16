@@ -1,13 +1,10 @@
 package team6.travelplanner.models;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.maps.model.PlacesSearchResult;
 import lombok.Data;
-import org.springframework.data.jpa.repository.Modifying;
-import team6.travelplanner.Vault;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import java.net.URL;
@@ -27,6 +24,8 @@ public class Place {
     @Id
     String placeId;
 
+    @Transient
+    String[] type;
     int userRatingsTotal;
     String priceLevel;
     float rating;
@@ -54,15 +53,18 @@ public class Place {
         }
     }
 
-    public static Place getPlaceFromPlacesSearchResult(PlacesSearchResult result) {
+    public static Place getPlaceFromPlacesSearchResult(@NonNull  PlacesSearchResult result) {
         Place place = new Place();
+        place.type = result.types;
         place.formattedAddress = result.formattedAddress;
         place.name = result.name;
         place.icon = result.icon;
         place.placeId = result.placeId;
         place.rating = result.rating;
-        for (com.google.maps.model.Photo photo : result.photos) {
-            place.photos.add(new Photo(photo));
+        if (result.photos != null) {
+            for (com.google.maps.model.Photo photo : result.photos) {
+                place.photos.add(new Photo(photo));
+            }
         }
         return place;
     }
