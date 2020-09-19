@@ -71,7 +71,7 @@ public class MapClient {
             }
             res.setEntity(places);
             res.setNextPageToken(placesSearchResponse.nextPageToken);
-            System.out.println(places);
+            log.info("nearby places", places);
             writeDatabase(places);
             System.out.println(placesSearchResponse.nextPageToken);
         } catch (ApiException e) {
@@ -107,7 +107,11 @@ public class MapClient {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                places.stream().forEach(place -> placeRepository.save(place));
+                places.stream().forEach(place -> {
+                    if (!placeRepository.existsById(place.getPlaceId())) {
+                        placeRepository.save(place);
+                    }
+                });
             }
         }).start();
     }
