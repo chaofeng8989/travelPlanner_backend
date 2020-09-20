@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import team6.travelplanner.googleClient.MapClient;
+import team6.travelplanner.models.City;
 import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 
 @Slf4j
 @RestController
@@ -35,6 +37,13 @@ public class PlaceController {
     public Place getPlaceDetails(@PathVariable String placeId) {
         Place place = mapClient.getPlaceDetails(placeId);
         return place;
+    }
+
+
+    @GetMapping("/city")
+    public City getCity() {
+        City test = new City(Arrays.asList("culture", "modern"), Arrays.asList("walking", "driving", "bicycling", "transit"));
+        return test;
     }
 
 }
