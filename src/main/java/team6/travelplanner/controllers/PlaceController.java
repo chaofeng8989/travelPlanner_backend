@@ -49,8 +49,11 @@ public class PlaceController {
 
 
     @PostMapping("/city")
-    public ResponseEntity recommendTour(@RequestParam String City, @RequestParam String interest, @RequestParam String transportation) {
-        return ResponseEntity.ok("TO DO");
+    public City recommendTour(@RequestBody City city) {
+        city.setInterest(Arrays.asList("culture", "modern"));
+        city.setTransportation(Arrays.asList("walking", "driving", "bicycling", "transit"));
+        mapClient.fillCity(city);
+        return city;
     }
 
     @PostMapping("/place")

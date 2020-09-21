@@ -24,6 +24,9 @@ public class Place {
     @Id
     String placeId;
 
+    public double lat;
+    public double lon;
+
     @Transient
     String[] type;
     int userRatingsTotal;
@@ -48,6 +51,8 @@ public class Place {
         rating = placeDetails.rating;
         vicinity = placeDetails.vicinity;
         website = placeDetails.website;
+        lat = placeDetails.geometry.location.lat;
+        lon = placeDetails.geometry.location.lng;
         for (com.google.maps.model.Photo photo : placeDetails.photos) {
             photos.add(new Photo(photo));
         }
@@ -61,6 +66,8 @@ public class Place {
         place.icon = result.icon;
         place.placeId = result.placeId;
         place.rating = result.rating;
+        place.lat = result.geometry.location.lat;
+        place.lon = result.geometry.location.lng;
         if (result.photos != null) {
             for (com.google.maps.model.Photo photo : result.photos) {
                 place.photos.add(new Photo(photo));
