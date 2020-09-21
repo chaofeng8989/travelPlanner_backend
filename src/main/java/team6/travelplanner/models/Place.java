@@ -1,5 +1,6 @@
 package team6.travelplanner.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.maps.model.PlacesSearchResult;
@@ -13,8 +14,7 @@ import java.util.Set;
 
 @Data
 @Entity
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Place {
     String formattedAddress;
     String formattedPhoneNumber;
@@ -36,7 +36,7 @@ public class Place {
     URL website;
 
 
-    @JoinColumn @OneToMany(cascade = CascadeType.ALL) @JsonSerialize
+    @JoinColumn @OneToMany(cascade = CascadeType.ALL)
     Set<Photo> photos = new HashSet<>();
 
 
