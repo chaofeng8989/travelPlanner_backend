@@ -1,5 +1,6 @@
 package team6.travelplanner.googleClient;
 
+import com.google.maps.FindPlaceFromTextRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.ImageResult;
 import com.google.maps.PlacesApi;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import team6.travelplanner.models.City;
 import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
 import team6.travelplanner.models.PlaceRepository;
@@ -86,7 +88,13 @@ public class MapClient {
     }
 
     public Place getPlaceDetails(String placeId) {
-        Place place = placeRepository.getOne(placeId);
+        Place place = null;
+        if (placeRepository.existsById(placeId)) {
+            place = placeRepository.getOne(placeId);
+        } else {
+            place = new Place();
+        }
+
         try {
             PlaceDetails placeDetails = null;
             placeDetails = PlacesApi.placeDetails(context, placeId).await();
@@ -102,6 +110,27 @@ public class MapClient {
         }
         return place;
     }
+
+    public void fillCity(City city) {
+        try {
+            FindPlaceFromText response =  PlacesApi.findPlaceFromText(context, city.getCity()+", " + city.getState(), FindPlaceFromTextRequest.InputType.TEXT_QUERY).fields(FindPlaceFromTextRequest.FieldMask.GEOMETRY).await();
+            if (response.candidates.length == 0) {
+                log.error("city validation error");
+            } else {
+                PlacesSearchResult result = response.candidates[0];
+                log.info("city info : " + result);
+                city.setLat(result.geometry.location.lat);
+                city.setLon(result.geometry.location.lng);
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void writeDatabase(Set<Place> places) {
         new Thread(new Runnable() {

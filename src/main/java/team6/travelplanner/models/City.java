@@ -10,6 +10,11 @@ public class City {
     List<String> interest;
     List<String> transportation;
 
+    String city;
+    String state;
+
+    double lat;
+    double lon;
     public City(List<String> interest, List<String> transportation) {
         this.interest = interest;
         this.transportation = transportation;
