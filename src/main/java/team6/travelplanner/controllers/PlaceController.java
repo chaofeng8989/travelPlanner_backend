@@ -2,17 +2,18 @@ package team6.travelplanner.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import team6.travelplanner.googleClient.MapClient;
 import team6.travelplanner.models.City;
 import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
+import team6.travelplanner.models.Tour;
 
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -44,6 +45,17 @@ public class PlaceController {
     public City getCity() {
         City test = new City(Arrays.asList("culture", "modern"), Arrays.asList("walking", "driving", "bicycling", "transit"));
         return test;
+    }
+
+
+    @PostMapping("/city")
+    public ResponseEntity recommendTour(@RequestParam String City, @RequestParam String interest, @RequestParam String transportation) {
+        return ResponseEntity.ok("TO DO");
+    }
+
+    @PostMapping("/place")
+    public ResponseEntity getTour(@RequestBody List<Place> places) {
+        return ResponseEntity.ok("TO DO");
     }
 
 }
