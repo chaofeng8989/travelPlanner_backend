@@ -24,8 +24,8 @@ public class Place {
     @Id
     String placeId;
 
-    public double lat;
-    public double lon;
+    double lat;
+    double lon;
 
     @Transient
     String[] type;
@@ -76,4 +76,15 @@ public class Place {
         return place;
     }
 
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
 }
