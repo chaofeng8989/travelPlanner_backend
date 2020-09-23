@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Data
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Place {
+public class Place implements Serializable {
     String formattedAddress;
     String formattedPhoneNumber;
     URL icon;

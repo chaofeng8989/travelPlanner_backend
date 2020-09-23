@@ -1,9 +1,6 @@
 package team6.travelplanner.googleClient;
 
-import com.google.maps.FindPlaceFromTextRequest;
-import com.google.maps.GeoApiContext;
-import com.google.maps.ImageResult;
-import com.google.maps.PlacesApi;
+import com.google.maps.*;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +13,7 @@ import team6.travelplanner.models.Place;
 import team6.travelplanner.models.PlaceRepository;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 
 import static team6.travelplanner.Vault.GOOGLE_APIKEY;
@@ -60,7 +56,7 @@ public class MapClient {
         return res;
     }
 
-    public PagedResponse getNearbyPlaces(double lat, double lng) {
+    public PagedResponse getPagedNearbyPlaces(double lat, double lng) {
         PagedResponse res = new PagedResponse();
         Set<Place> places = new HashSet<>();
         try {
@@ -86,6 +82,9 @@ public class MapClient {
 
         return res;
     }
+
+
+
 
     public Place getPlaceDetails(String placeId) {
         Place place = null;
@@ -169,5 +168,59 @@ public class MapClient {
             e.printStackTrace();
         }
         return p;
+    }
+
+
+
+
+    public Set<Place> getNearbyPlaces(double lat, double lng) {
+        Set<Place> places = new HashSet<>();
+        try {
+            LatLng location = new LatLng(lat, lng);
+            PlacesSearchResponse placesSearchResponse = PlacesApi.nearbySearchQuery(context, location)
+                    .radius(15000).type(PlaceType.TOURIST_ATTRACTION).await();
+            for (PlacesSearchResult place : placesSearchResponse.results) {
+                places.add(Place.getPlaceFromPlacesSearchResult(place));
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return places;
+    }
+
+
+    public Map<Place, Map<Place, Double>> getDistanceMatrix(List<Place> places) {
+
+        Map<Place, Map<Place, Double>> distanceMatrix = new HashMap<>();
+        String[] origins = places.stream().map(place -> "place_id:"+place.getPlaceId()).toArray(String[]::new);
+        String[] destinations = places.stream().map(place -> "place_id:"+place.getPlaceId()).toArray(String[]::new);
+        System.out.println("total size : " + origins.length);
+        Arrays.stream(origins).forEach(s -> System.out.print(s+"|"));
+        System.out.println();
+        try {
+            DistanceMatrix matrix =
+                    DistanceMatrixApi.getDistanceMatrix(context, origins, destinations).await();
+
+            for (int i = 0; i < places.size(); i++) {
+                Place source = places.get(i);
+                distanceMatrix.put(source, new HashMap<>());
+                for (int j = 0; j < places.size(); j++) {
+                    Place destination = places.get(j);
+
+                    distanceMatrix.get(source).put(destination, (double)matrix.rows[i].elements[j].distance.inMeters);
+                }
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return distanceMatrix;
     }
 }

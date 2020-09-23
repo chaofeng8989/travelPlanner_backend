@@ -8,12 +8,10 @@ import team6.travelplanner.googleClient.MapClient;
 import team6.travelplanner.models.City;
 import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
-import team6.travelplanner.models.Tour;
 
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @RestController
@@ -27,7 +25,7 @@ public class PlaceController {
                                         @RequestParam(value = "nextPageToken", defaultValue = "") String token) {
         LocalTime localTime = LocalTime.now();
         PagedResponse res = null;
-        if (token.isBlank()) res = mapClient.getNearbyPlaces(lat,  lon);
+        if (token.isBlank()) res = mapClient.getPagedNearbyPlaces(lat,  lon);
         else res = mapClient.getNearbyPlacesNextPage(token);
 
         log.info("query time: " + (LocalTime.now().getSecond() - localTime.getSecond() + 60) % 60);
