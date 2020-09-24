@@ -8,27 +8,38 @@ import team6.travelplanner.googleClient.MapClient;
 import team6.travelplanner.models.City;
 import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
-import team6.travelplanner.models.Tour;
+import team6.travelplanner.models.PlaceRepository;
 
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @RestController
 public class PlaceController {
     @Autowired
     MapClient mapClient;
+    @Autowired
+    PlaceRepository placeRepository;
 
     @GetMapping("/place/search")
     public PagedResponse getPlaceSearch(@RequestParam(value = "lat", defaultValue = "47.608013") double lat,
                                         @RequestParam(value = "lon", defaultValue = "-122.335167") double lon,
-                                        @RequestParam(value = "nextPageToken", defaultValue = "") String token) {
+                                        @RequestParam(value = "nextPageToken", defaultValue = "") String token,
+                                        @RequestParam(value = "city", defaultValue = "") String city) {
         LocalTime localTime = LocalTime.now();
         PagedResponse res = null;
-        if (token.isBlank()) res = mapClient.getNearbyPlaces(lat,  lon);
-        else res = mapClient.getNearbyPlacesNextPage(token);
+        if (!token.isBlank()) {
+            res = mapClient.getNearbyPlacesNextPage(token);
+        } else {
+            if (!city.isBlank()) {
+                double[] location = mapClient.getLocation(city);
+                lat = location[0];
+                lon = location[1];
+            }
+            res = mapClient.getPagedNearbyPlaces(lat,  lon);
+        }
+
 
         log.info("query time: " + (LocalTime.now().getSecond() - localTime.getSecond() + 60) % 60);
         return res;
@@ -38,6 +49,12 @@ public class PlaceController {
     public Place getPlaceDetails(@PathVariable String placeId) {
         Place place = mapClient.getPlaceDetails(placeId);
         return place;
+    }
+
+    @PostMapping("/place")
+    public List<Place> getPlacesDetails(@RequestBody List<String> placeIdList) {
+        List<Place> places = placeRepository.findAllById(placeIdList);
+        return places;
     }
 
 
@@ -56,9 +73,5 @@ public class PlaceController {
         return city;
     }
 
-    @PostMapping("/place")
-    public ResponseEntity getTour(@RequestBody List<Place> places) {
-        return ResponseEntity.ok("TO DO");
-    }
 
 }

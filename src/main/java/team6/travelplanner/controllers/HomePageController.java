@@ -36,7 +36,7 @@ public class HomePageController {
     public Greeting greetingWithParam(@RequestParam(value = "name", defaultValue = "World") String name) {
         Greeting g = new Greeting(String.format(template, name));
         repository.save(g);
-        mapClient.getNearbyPlaces(47.608013,  -122.335167);
+        mapClient.getPagedNearbyPlaces(47.608013,  -122.335167);
         return g;
     }
 }

@@ -1,39 +1,55 @@
 package team6.travelplanner.route;
 
 
+import org.apache.commons.math4.ml.clustering.CentroidCluster;
+import org.apache.commons.math4.ml.clustering.Clusterable;
+import org.apache.commons.math4.ml.clustering.KMeansPlusPlusClusterer;
 import team6.travelplanner.models.Place;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class Cluster {
 
-    public List<List<Place>> a(Map<Place, Map<Place, Integer>> distanceMap, int duration) {
-        List<List<Place>> clusteredPlaces = new ArrayList<>();
+    public static List<List<Place>> Cluster(List<Place> places, int clusterNumber) {
+        List<PlaceWrapper> clusterInput = new ArrayList<PlaceWrapper>(places.size());
+        for (Place location : places){
+            clusterInput.add(new PlaceWrapper(location));
+        }
+        // initialize a new clustering algorithm.
+        // we use KMeans++ with 10 clusters and 10000 iterations maximum.
+        // we did not specify a distance measure; the default (euclidean distance) is used.
+        KMeansPlusPlusClusterer<PlaceWrapper> clusterer = new KMeansPlusPlusClusterer<PlaceWrapper>(clusterNumber, 10000);
+        List<CentroidCluster<PlaceWrapper>> clusterResults = clusterer.cluster(clusterInput);
 
+        List<List<Place>> groups = new LinkedList<>();
+        // output the clusters
+        for (int i=0; i<clusterResults.size(); i++) {
+            List<Place> tmp = new LinkedList<>();
+            for (PlaceWrapper locationWrapper : clusterResults.get(i).getPoints()) {
+                tmp.add(locationWrapper.getPlace());
+            }
+            groups.add(tmp);
+        }
+        return groups;
+    }
 
-        Set<Place> allPlaces = distanceMap.keySet();
+    public static class PlaceWrapper implements Clusterable {
+        private double[] points;
+        private Place place;
 
-        for (Place place : allPlaces) {
-            double lat = place.getLat();
-            double lon = place.getLon();
+        public PlaceWrapper(Place place) {
+            this.place = place;
+            this.points = new double[] { place.getLat(), place.getLon() };
         }
 
-//        DbScan dbScan = new DbScan();
-//        Map<NodePair, Double> nodesPairMap = dbScan.getCodingFileMap(inputPath);
-//        dbscan.getDBSCANResult(locations, nodesPairMap,0.5,10);
-//        clusteredPlaces.add();
+        public Place getPlace() {
+            return place;
+        }
 
-        //    public static void main(String[] args) throws IOException {
-//        // TODO Auto-generated method stub
-//        KmeansPlusPlus kmeans = new KmeansPlusPlus();
-//        Map<NodePair, Double> nodesPairMap = kmeans.getCodingFileMap(inputPath);
-//        kmeans.getKMeansResult(locations, nodesPairMap,2,10000);
-//    }
-
-        return clusteredPlaces;
+        public double[] getPoint() {
+            return points;
+        }
     }
+
 }
