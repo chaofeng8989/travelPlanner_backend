@@ -2,7 +2,15 @@ package team6.travelplanner.googleClient;
 
 import com.google.maps.*;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.*;
+import com.google.maps.model.DistanceMatrix;
+import com.google.maps.model.FindPlaceFromText;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
+import com.google.maps.model.PlaceDetails;
+import com.google.maps.model.PlaceType;
+import com.google.maps.model.PlacesSearchResponse;
+import com.google.maps.model.PlacesSearchResult;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +22,8 @@ import team6.travelplanner.models.PlaceRepository;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.BiFunction;
 
-import static team6.travelplanner.Vault.GOOGLE_APIKEY;
+import static team6.travelplanner.Constants.GOOGLE_APIKEY;
 
 @Component
 @Slf4j
@@ -28,10 +35,7 @@ public class MapClient {
     @Autowired
     PlaceRepository placeRepository;
 
-    /**
-     * @param nextPageToken
-     * @return
-     */
+
     public PagedResponse getNearbyPlacesNextPage(String nextPageToken) {
         PagedResponse res = new PagedResponse();
         Set<Place> places = new HashSet<>();
@@ -60,9 +64,8 @@ public class MapClient {
         PagedResponse res = new PagedResponse();
         Set<Place> places = new HashSet<>();
         try {
-            PlacesSearchResponse placesSearchResponse = null;
             LatLng location = new LatLng(lat, lng);
-            placesSearchResponse = PlacesApi.nearbySearchQuery(context, location)
+            PlacesSearchResponse placesSearchResponse = PlacesApi.nearbySearchQuery(context, location)
                     .radius(5000).type(PlaceType.TOURIST_ATTRACTION).await();
             for (PlacesSearchResult place : placesSearchResponse.results) {
                 places.add(Place.getPlaceFromPlacesSearchResult(place));
@@ -132,25 +135,17 @@ public class MapClient {
 
 
     private void writeDatabase(Set<Place> places) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                places.stream().forEach(place -> {
+        new Thread(()->
+                places.forEach(place -> {
                     if (!placeRepository.existsById(place.getPlaceId())) {
                         placeRepository.save(place);
                     }
-                });
-            }
-        }).start();
+                })
+            ).start();
     }
 
     private void writeDatabase(Place place) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                placeRepository.save(place);
-            }
-        }).start();
+        new Thread(() -> placeRepository.save(place)).start();
     }
 
     public ImageResult getImage(String photoReference, int width, int height) {
@@ -194,7 +189,6 @@ public class MapClient {
 
 
     public Map<Place, Map<Place, Double>> getDistanceMatrix(List<Place> places) {
-
         Map<Place, Map<Place, Double>> distanceMatrix = new HashMap<>();
         String[] origins = places.stream().map(place -> "place_id:"+place.getPlaceId()).toArray(String[]::new);
         String[] destinations = places.stream().map(place -> "place_id:"+place.getPlaceId()).toArray(String[]::new);
@@ -202,16 +196,13 @@ public class MapClient {
         Arrays.stream(origins).forEach(s -> System.out.print(s+"|"));
         System.out.println();
         try {
-            DistanceMatrix matrix =
-                    DistanceMatrixApi.getDistanceMatrix(context, origins, destinations).await();
-
+            DistanceMatrix matrix = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations).await();
             for (int i = 0; i < places.size(); i++) {
                 Place source = places.get(i);
                 distanceMatrix.put(source, new HashMap<>());
                 for (int j = 0; j < places.size(); j++) {
                     Place destination = places.get(j);
-
-                    distanceMatrix.get(source).put(destination, (double)matrix.rows[i].elements[j].distance.inMeters);
+                    distanceMatrix.get(source).put(destination, 1.0 * matrix.rows[i].elements[j].duration.inSeconds / 60);
                 }
             }
         } catch (ApiException e) {
@@ -223,4 +214,22 @@ public class MapClient {
         }
         return distanceMatrix;
     }
+
+    public double[] getLocation(String city) {
+        try {
+            GeocodingResult[] results = GeocodingApi.newRequest(context).address(city).await();
+            if (results.length == 0) throw new IllegalArgumentException("wrong city address");
+            Geometry geometry = results[0].geometry;
+
+            return new double[]{geometry.location.lat, geometry.location.lng};
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new double[]{0.0, 0.0};
+    }
+
 }

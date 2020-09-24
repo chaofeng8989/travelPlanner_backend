@@ -1,22 +1,21 @@
 package team6.travelplanner.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.maps.model.PlacesSearchResult;
 import lombok.Data;
 import lombok.NonNull;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Place implements Serializable {
+public class Place {
     String formattedAddress;
     String formattedPhoneNumber;
     URL icon;
@@ -28,8 +27,8 @@ public class Place implements Serializable {
     double lat;
     double lon;
 
-    @Transient
-    String[] type;
+    @ElementCollection
+    Set<String> type;
     int userRatingsTotal;
     String priceLevel;
     float rating;
@@ -61,7 +60,7 @@ public class Place implements Serializable {
 
     public static Place getPlaceFromPlacesSearchResult(@NonNull  PlacesSearchResult result) {
         Place place = new Place();
-        place.type = result.types;
+        place.type = Arrays.stream(result.types).collect(Collectors.toSet());
         place.formattedAddress = result.formattedAddress;
         place.name = result.name;
         place.icon = result.icon;
