@@ -8,3 +8,6 @@ spring:
           github:
             client-id: c3ee96dd95a99430a27f
             client-secret: 09887abf533c4113b54eb2fbd5ab0f69df7b01db
+          facebook:
+            client-id: 338655860582263
+            client-secret: 8c7eb9ebe9c0f12c12cbdea3fbaa8764

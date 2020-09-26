@@ -31,15 +31,24 @@ public class UserController {
         log.info("user created successfully " + user.getUsername());
         return ResponseEntity.ok("User successfully created");
     }
-    @GetMapping("/loginfromgithub")
+    @GetMapping("/loginfromoauth")
     public ResponseEntity registerFromGithub(
             @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
             @AuthenticationPrincipal OAuth2User oAuth2User) {
-        if (userRepository.findByUsername(oAuth2User.getName()) == null) {
+        String username = null;
+        if (authorizedClient.getClientRegistration().getClientName() == "GitHub") {
+            username = oAuth2User.getAttributes().get("login").toString();
+        } else if (authorizedClient.getClientRegistration().getClientName() == "Facebook") {
+            username = oAuth2User.getAttributes().get("name").toString();
+        }
+        log.info(username);
+        if (userRepository.findByUsername(username) == null) {
             User user = new User();
-            user.setUsername(oAuth2User.getName());
+            user.setUsername(username);
             userRepository.save(user);
         }
-        return ResponseEntity.ok(oAuth2User.getName() + "Logged in from Github");
+        //log.info(oAuth2User.getAttributes().toString());
+        //log.info(authorizedClient.getClientRegistration().getClientName());
+        return ResponseEntity.ok(username + " Logged in from Third Party");
     }
 }

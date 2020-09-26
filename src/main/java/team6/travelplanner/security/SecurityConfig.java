@@ -41,20 +41,22 @@ public class SecurityConfig {
             http.cors().and().csrf().disable().authorizeRequests()
                     .antMatchers("/register").permitAll()
                     .anyRequest().authenticated()
-                    .and().formLogin()
+                    .and()
+                    .formLogin()
                     .loginPage("/login")
                     .and()
+                    .oauth2Login().defaultSuccessUrl("/loginfromoauth");
                     //.addFilter(new JWTAuthenticationFilter(authenticationManager()));
-                    .oauth2Login().defaultSuccessUrl("/loginfromgithub");
                     // this disables session creation on Spring Security
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }
 
-
+        /*
         @Override
         public void configure(WebSecurity web) throws Exception {
             web.ignoring().anyRequest();
         }
+         */
 
     }
 
