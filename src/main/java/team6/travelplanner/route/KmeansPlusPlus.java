@@ -6,6 +6,7 @@ import org.apache.commons.math4.ml.clustering.Clusterable;
 import org.apache.commons.math4.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.commons.math4.ml.distance.DistanceMeasure;
 
+import team6.travelplanner.googleClient.MapClient;
 import team6.travelplanner.models.Place;
 
 import java.util.*;
@@ -85,12 +86,39 @@ public class KmeansPlusPlus {
 
         public Place getPlace() {
             return place;
+
         }
 
         public double[] getPoint() {
             return points;
         }
     }
+    public static void main(String... args) {
+        MapClient mapClient = new MapClient();
 
+        Set<Place> set = mapClient.getNearbyPlaces(47.608013, -122.335167);   //a set contains 20 places
+
+
+        List<Place> places = new LinkedList<>();     //a list with 10 places
+
+        for (Place place : set) {
+            if (places.size() >= 10) break;
+                places.add(place);
+        }
+
+
+        Map<Place, Map<Place, Double>> dis = mapClient.getDistanceMatrix(places);   // distance matrix
+
+        for (int i = 0; i < places.size(); i++) {
+            for (int j = 0; j < places.size(); j++) {
+                System.out.print(dis.get(places.get(i)).get(places.get(j)) + " ");
+            }
+            System.out.println();
+        }
+
+
+
+
+    }
 
 }
