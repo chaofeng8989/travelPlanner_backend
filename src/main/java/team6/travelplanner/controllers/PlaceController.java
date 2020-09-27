@@ -17,10 +17,14 @@ import java.util.List;
 @Slf4j
 @RestController
 public class PlaceController {
+    private final MapClient mapClient;
+    private final PlaceRepository placeRepository;
+
     @Autowired
-    MapClient mapClient;
-    @Autowired
-    PlaceRepository placeRepository;
+    public PlaceController(MapClient mapClient, PlaceRepository placeRepository) {
+        this.mapClient = mapClient;
+        this.placeRepository = placeRepository;
+    }
 
     @GetMapping("/place/search")
     public PagedResponse getPlaceSearch(@RequestParam(value = "lat", defaultValue = "47.608013") double lat,
@@ -56,7 +60,6 @@ public class PlaceController {
         List<Place> places = placeRepository.findAllById(placeIdList);
         return places;
     }
-
 
     @GetMapping("/city")
     public City getCity() {
