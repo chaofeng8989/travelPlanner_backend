@@ -10,8 +10,12 @@ import team6.travelplanner.models.UserRepository;
 @RestController
 @Slf4j
 public class UserController {
+    private final UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody User user) {
