@@ -19,7 +19,7 @@ public class Cluster {
         // initialize a new clustering algorithm.
         // we use KMeans++ with 10 clusters and 10000 iterations maximum.
         // we did not specify a distance measure; the default (euclidean distance) is used.
-        KMeansPlusPlusClusterer<PlaceWrapper> clusterer = new KMeansPlusPlusClusterer<PlaceWrapper>(clusterNumber, 10000);
+        KMeansPlusPlusClusterer<PlaceWrapper> clusterer = new KMeansPlusPlusClusterer<PlaceWrapper>(clusterNumber, 300);
         List<CentroidCluster<PlaceWrapper>> clusterResults = clusterer.cluster(clusterInput);
 
         List<List<Place>> groups = new LinkedList<>();
