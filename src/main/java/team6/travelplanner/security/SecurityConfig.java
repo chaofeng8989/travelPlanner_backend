@@ -43,7 +43,7 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
                     .and()
                     .formLogin()
-                    .loginPage("/login")
+                    .loginPage("/login").defaultSuccessUrl("/loginfromoauth")
                     .and()
                     .oauth2Login().defaultSuccessUrl("/loginfromoauth");
                     //.addFilter(new JWTAuthenticationFilter(authenticationManager()));
