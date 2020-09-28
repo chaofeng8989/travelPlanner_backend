@@ -15,6 +15,7 @@ import team6.travelplanner.models.UserRepository;
 @RestController
 @Slf4j
 public class UserController {
+
     @Autowired
     UserRepository userRepository;
     @Autowired

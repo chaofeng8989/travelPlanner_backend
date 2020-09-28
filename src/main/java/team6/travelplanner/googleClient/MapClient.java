@@ -47,7 +47,7 @@ public class MapClient {
                 places.add(Place.getPlaceFromPlacesSearchResult(place));
             }
             res.setEntity(places);
-            res.setNextPageToken(nextPageToken);
+            res.setNextPageToken(placesSearchResponse.nextPageToken);
             writeDatabase(places);
         } catch (ApiException e) {
             e.printStackTrace();
