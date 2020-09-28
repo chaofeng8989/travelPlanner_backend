@@ -9,16 +9,21 @@ import team6.travelplanner.models.Tour;
 import team6.travelplanner.models.TourRepository;
 import team6.travelplanner.route.Cluster;
 import team6.travelplanner.route.GenerateTour;
-
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 public class TourController {
-    @Autowired private  PlaceRepository placeRepository;
-    @Autowired private GenerateTour generateTour ;
-    @Autowired private TourRepository tourRepository;
+    private  PlaceRepository placeRepository;
+    private GenerateTour generateTour ;
+    private TourRepository tourRepository;
+
+    @Autowired
+    public TourController(PlaceRepository placeRepository, GenerateTour generateTour, TourRepository tourRepository) {
+        this.placeRepository = placeRepository;
+        this.generateTour = generateTour;
+        this.tourRepository = tourRepository;
+    }
 
     @PostMapping("/tour/generate")
     public SimpleTour generateTour(@RequestBody RequestWrapper requestWrapper) {
