@@ -51,12 +51,10 @@ public class SecurityConfig {
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }
 
-        /*
         @Override
         public void configure(WebSecurity web) throws Exception {
             web.ignoring().anyRequest();
         }
-         */
 
     }
 
