@@ -50,13 +50,11 @@ public class SecurityConfig {
                     // this disables session creation on Spring Security
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }
-/*
         @Override
         public void configure(WebSecurity web) throws Exception {
             web.ignoring().anyRequest();
         }
 
- */
     }
 
 
