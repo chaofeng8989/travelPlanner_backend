@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import team6.travelplanner.models.User;
 import team6.travelplanner.models.UserRepository;
+import java.util.Collections;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
@@ -21,6 +22,6 @@ public class MyUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new MyUserPrincipal(user);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Collections.emptyList());
     }
 }

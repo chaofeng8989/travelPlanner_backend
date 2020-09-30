@@ -9,7 +9,12 @@ import team6.travelplanner.models.Tour;
 import team6.travelplanner.models.TourRepository;
 import team6.travelplanner.route.GenerateClusters;
 import team6.travelplanner.route.GenerateTour;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Id;
+import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,15 +65,28 @@ public class TourController {
 
     @Data
     static class SimpleDay {
-        List<String> placeId;
+        List<SimplePlace> simplePlaces;
+
         List<Integer> time;
 
         public SimpleDay(Tour.OneDayTour oneDayTour) {
-            placeId = oneDayTour.getPlaceList().stream().map(Place::getName).collect(Collectors.toList());
+            simplePlaces = oneDayTour.getPlaceList().stream().map(SimplePlace::new).collect(Collectors.toList());
             time = oneDayTour.getPlaceTime();
         }
     }
 
+    @Data static class SimplePlace {
+        String name;
+        String placeId;
+        float rating;
+        String photo;
+        public SimplePlace(Place p) {
+            name = p.getName();
+            placeId = p.getPlaceId();
+            rating = p.getRating();
+            photo = p.getPhotos().iterator().next().toString();
+        }
+    }
     @Data
     static class RequestWrapper{
         List<String> placeIdSet;
