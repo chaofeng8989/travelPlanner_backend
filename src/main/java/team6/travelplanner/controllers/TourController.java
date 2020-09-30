@@ -7,7 +7,7 @@ import team6.travelplanner.models.Place;
 import team6.travelplanner.models.PlaceRepository;
 import team6.travelplanner.models.Tour;
 import team6.travelplanner.models.TourRepository;
-import team6.travelplanner.route.Cluster;
+import team6.travelplanner.route.GenerateClusters;
 import team6.travelplanner.route.GenerateTour;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +28,7 @@ public class TourController {
     @PostMapping("/tour/generate")
     public SimpleTour generateTour(@RequestBody RequestWrapper requestWrapper) {
         List<Place> places = placeRepository.findAllById(requestWrapper.placeIdSet);
-        List<List<Place>> groups = Cluster.Cluster(places, requestWrapper.duration);
+        List<List<Place>> groups = GenerateClusters.clustering(places, requestWrapper.duration);
         for (int i = 0; i < groups.size(); i++) {
             System.out.println("cluster " + i + " : ");
             groups.get(i).stream().forEach(p -> System.out.print(p.getName() + " , "));

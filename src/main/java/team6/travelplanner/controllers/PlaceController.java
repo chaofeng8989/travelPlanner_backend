@@ -33,10 +33,10 @@ public class PlaceController {
                                         @RequestParam(value = "city", defaultValue = "") String city) {
         LocalTime localTime = LocalTime.now();
         PagedResponse res = null;
-        if (!token.isBlank()) {
+        if (!(token == null || token.trim().length() == 0)) {
             res = mapClient.getNearbyPlacesNextPage(token);
         } else {
-            if (!city.isBlank()) {
+            if (!(city == null || city.trim().length() == 0)) {
                 double[] location = mapClient.getLocation(city);
                 lat = location[0];
                 lon = location[1];
