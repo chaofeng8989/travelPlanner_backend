@@ -63,7 +63,7 @@ public class PlaceController {
 
     @GetMapping("/city")
     public City getCity() {
-        City test = new City(Arrays.asList("culture", "modern"), Arrays.asList("walking", "driving", "bicycling", "transit"));
+        City test = new City(Arrays.asList("culture", "modern"), Arrays.asList("Walking", "Driving", "Bicycling", "Transit"));
         return test;
     }
 
@@ -71,7 +71,7 @@ public class PlaceController {
     @PostMapping("/city")
     public City recommendTour(@RequestBody City city) {
         city.setInterest(Arrays.asList("culture", "modern"));
-        city.setTransportation(Arrays.asList("walking", "driving", "bicycling", "transit"));
+        city.setTransportation(Arrays.asList("Walking", "Driving", "Bicycling", "Transit"));
         mapClient.fillCity(city);
         return city;
     }

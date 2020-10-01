@@ -91,7 +91,7 @@ public class TourController {
     static class RequestWrapper{
         List<String> placeIdSet;
         int duration;
-        String travelType;
+        List<String> travelType;
     }
 
 }
