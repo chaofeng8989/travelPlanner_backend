@@ -16,7 +16,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**");
-                registry.addMapping("https://travelplannerbackend.azurewebsites.net/**");
+                registry.addMapping("https://staticwebsitechao.z20.web.core.windows.net/**");
             }
         };
     }
