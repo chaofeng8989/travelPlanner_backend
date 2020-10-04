@@ -25,8 +25,10 @@ public class AppAuthenticationSuccessHandler implements AuthenticationSuccessHan
         String authUserName = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         System.out.println(authUserName);
         //set our response to OK status
-        httpServletResponse.setHeader("Access-Control-Allow-Origin", "https://staticwebsitechao.z20.web.core.windows.net/**");
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", httpServletRequest.getHeader("Origin"));
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
+        httpServletResponse.addHeader("Access-Control-Allow-Credentials", "true");
         httpServletResponse.getWriter().write(authUserName);
         httpServletResponse.getWriter().flush();
         httpServletResponse.getWriter().close();
