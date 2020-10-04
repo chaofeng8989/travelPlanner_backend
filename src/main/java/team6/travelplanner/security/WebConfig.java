@@ -19,4 +19,11 @@ public class WebConfig {
             }
         };
     }
-}
+}/*
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web.ignoring().anyRequest();
+        }
+
+*/

@@ -2,10 +2,13 @@ package team6.travelplanner.security;
 
 import net.bytebuddy.asm.AsmVisitorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -21,6 +24,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,41 +56,22 @@ public class SecurityConfig {
                     .antMatchers("/register").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                    .formLogin()
-                    .loginPage("/login").successHandler(successHandler())
+                    .formLogin().successHandler(new AppAuthenticationSuccessHandler())
                     .and()
                     .oauth2Login().defaultSuccessUrl("/loginfromoauth");
                     //.addFilter(new JWTAuthenticationFilter(authenticationManager()));
                     // this disables session creation on Spring Security
                     //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }
+/*
 
         @Override
         public void configure(WebSecurity web) throws Exception {
             web.ignoring().anyRequest();
         }
 
-        private AuthenticationSuccessHandler successHandler() {
-            return new AuthenticationSuccessHandler() {
-                @Override
-                public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-                    try {
-
-                        String currentUserName = "";
-                        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-                            currentUserName = authentication.getName();
-                        }
-                        httpServletResponse.getWriter().append("Login Success: " + currentUserName);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    httpServletResponse.setStatus(200);
-                }
-            };
-        }
-
+*/
     }
-
     @Order(2)
     @Configuration
     public static class GitHubConfig extends WebSecurityConfigurerAdapter {
