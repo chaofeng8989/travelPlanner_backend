@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import team6.travelplanner.models.User;
-import team6.travelplanner.models.UserRepository;
+import team6.travelplanner.repositories.UserRepository;
 import java.util.Collections;
 
 @Service

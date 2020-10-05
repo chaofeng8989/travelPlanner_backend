@@ -96,38 +96,4 @@ public class GenerateTour {
         }
     }
 
-//    public static void main(String... args) {
-//        MapClient mapClient = new MapClient();
-//
-//        Set<Place> set = mapClient.getNearbyPlaces(47.608013, -122.335167);
-//        List<Place> places1 = new LinkedList<>();
-//        List<Place> places2 = new LinkedList<>();
-//        List<Place> places = new LinkedList<>();
-//
-//        for (Place place : set) {
-//            places.add(place);
-//            if (places1.size() < 10) places1.add(place);
-//            else if(places2.size() < 10)places2.add(place);
-//            if (places2.size() == 10) break;
-//        }
-//
-//        List<List<Place>> groups = Arrays.asList(places1, places2);
-//        GenerateTour shortestPath = new GenerateTour();
-//        List<List<Place>> orders = shortestPath.solve(groups);
-//
-//
-//        orders.forEach(x ->{
-//            x.stream().forEach(place -> System.out.print("  --->" + place.getName()));
-//            System.out.println("=============\n");
-//
-//        });
-//
-//
-//        List<List<Place>> lists = Cluster.Cluster(places, 5);
-//        for (int i = 0; i < lists.size(); i++) {
-//            System.out.println("cluster " + i + " =========");
-//            lists.get(i).forEach(p -> System.out.println(p.getName()));
-//        }
-//
-//    }
 }

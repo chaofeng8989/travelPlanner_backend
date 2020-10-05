@@ -19,6 +19,9 @@ public class Tour {
     @GeneratedValue
     long id;
 
+    String city;
+    String state;
+
     int duration;
 
     @OneToMany (cascade = CascadeType.ALL)

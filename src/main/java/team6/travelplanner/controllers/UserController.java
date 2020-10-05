@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2Aut
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import team6.travelplanner.models.User;
-import team6.travelplanner.models.UserRepository;
+import team6.travelplanner.repositories.UserRepository;
 
 @RestController
 @Slf4j

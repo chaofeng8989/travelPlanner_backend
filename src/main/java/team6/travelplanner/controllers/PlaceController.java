@@ -1,29 +1,31 @@
 package team6.travelplanner.controllers;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team6.travelplanner.googleClient.MapClient;
 import team6.travelplanner.models.City;
-import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
-import team6.travelplanner.models.PlaceRepository;
+import team6.travelplanner.models.Tour;
+import team6.travelplanner.repositories.PlaceRepository;
+import team6.travelplanner.repositories.TourRepository;
 
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 public class PlaceController {
     private final MapClient mapClient;
     private final PlaceRepository placeRepository;
-
+    private final TourRepository tourRepository;
     @Autowired
-    public PlaceController(MapClient mapClient, PlaceRepository placeRepository) {
+    public PlaceController(MapClient mapClient, PlaceRepository placeRepository, TourRepository tourRepository) {
         this.mapClient = mapClient;
         this.placeRepository = placeRepository;
+        this.tourRepository = tourRepository;
     }
 
     @GetMapping("/place/search")
@@ -73,7 +75,18 @@ public class PlaceController {
         city.setInterest(Arrays.asList("culture", "modern"));
         city.setTransportation(Arrays.asList("Walking", "Driving", "Bicycling", "Transit"));
         mapClient.fillCity(city);
+        List<Tour> tours = tourRepository.findAllByCity(city.getCity());
+        if (tours.size() > 5) tours = tours.subList(0, 5);
+        List<Long> tourIds = tours.stream().map(Tour::getId).collect(Collectors.toList());
+        city.setRecommendTourId(tourIds);
         return city;
+    }
+
+
+    @Data
+    public static class PagedResponse {
+        Set<Place> entity = new HashSet<>();
+        String nextPageToken;
     }
 
 

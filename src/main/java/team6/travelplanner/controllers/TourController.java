@@ -1,33 +1,34 @@
 package team6.travelplanner.controllers;
 
+import com.google.maps.PlacesApi;
+import com.google.maps.model.PlaceDetails;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import team6.travelplanner.googleClient.MapClient;
+import team6.travelplanner.models.City;
 import team6.travelplanner.models.Place;
-import team6.travelplanner.models.PlaceRepository;
+import team6.travelplanner.repositories.PlaceRepository;
 import team6.travelplanner.models.Tour;
-import team6.travelplanner.models.TourRepository;
+import team6.travelplanner.repositories.TourRepository;
 import team6.travelplanner.route.GenerateClusters;
 import team6.travelplanner.route.GenerateTour;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Id;
-import java.net.URL;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
 public class TourController {
-    private  PlaceRepository placeRepository;
-    private GenerateTour generateTour ;
-    private TourRepository tourRepository;
-
+    private final PlaceRepository placeRepository;
+    private final GenerateTour generateTour ;
+    private final TourRepository tourRepository;
+    private final MapClient mapClient;
     @Autowired
-    public TourController(PlaceRepository placeRepository, GenerateTour generateTour, TourRepository tourRepository) {
+    public TourController(PlaceRepository placeRepository, GenerateTour generateTour, TourRepository tourRepository, MapClient mapClient) {
         this.placeRepository = placeRepository;
         this.generateTour = generateTour;
         this.tourRepository = tourRepository;
+        this.mapClient = mapClient;
     }
 
     @PostMapping("/tour/generate")
@@ -40,15 +41,25 @@ public class TourController {
         }
         Tour tour = generateTour.solve(groups);
         tour.setDuration(requestWrapper.duration);
+        fillTour(tour);
         tourRepository.save(tour);
         SimpleTour simpleTour = new SimpleTour(tour);
         return simpleTour;
     }
 
+
     @GetMapping("/tour/{tourId}")
     public Tour generateTourDetail(@PathVariable long tourId) {
         Tour tour = tourRepository.getOne(tourId);
         return tour;
+    }
+
+
+    public void fillTour(Tour tour) {
+        Tour.OneDayTour oneDayTour = tour.getDays().get(0);
+        Place p = oneDayTour.getPlaceList().get(0);
+        String cityName = mapClient.getCityName(p.getPlaceId());
+        tour.setCity(cityName);
     }
 
     @Data

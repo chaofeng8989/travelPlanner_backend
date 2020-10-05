@@ -15,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import team6.travelplanner.controllers.PlaceController;
 import team6.travelplanner.models.City;
-import team6.travelplanner.models.PagedResponse;
 import team6.travelplanner.models.Place;
-import team6.travelplanner.models.PlaceRepository;
+import team6.travelplanner.repositories.PlaceRepository;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,8 +36,8 @@ public class MapClient {
     PlaceRepository placeRepository;
 
 
-    public PagedResponse getNearbyPlacesNextPage(String nextPageToken) {
-        PagedResponse res = new PagedResponse();
+    public PlaceController.PagedResponse getNearbyPlacesNextPage(String nextPageToken) {
+        PlaceController.PagedResponse res = new PlaceController.PagedResponse();
         Set<Place> places = new HashSet<>();
         try {
             PlacesSearchResponse placesSearchResponse = PlacesApi
@@ -60,8 +60,8 @@ public class MapClient {
         return res;
     }
 
-    public PagedResponse getPagedNearbyPlaces(double lat, double lng) {
-        PagedResponse res = new PagedResponse();
+    public PlaceController.PagedResponse getPagedNearbyPlaces(double lat, double lng) {
+        PlaceController.PagedResponse res = new PlaceController.PagedResponse();
         Set<Place> places = new HashSet<>();
         try {
             LatLng location = new LatLng(lat, lng);
@@ -111,6 +111,21 @@ public class MapClient {
             e.printStackTrace();
         }
         return place;
+    }
+
+    public String getCityName(String placeId) {
+        try {
+            PlaceDetails placeDetails = PlacesApi.placeDetails(context, placeId).await();
+            String address = placeDetails.formattedAddress;
+            return address.split(",")[1].trim();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public void fillCity(City city) {

@@ -13,7 +13,7 @@ import java.util.List;
 public class City {
     List<String> interest;
     List<String> transportation;
-
+    List<Long> recommendTourId;
     String city;
     String state;
 

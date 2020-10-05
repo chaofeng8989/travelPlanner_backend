@@ -67,14 +67,9 @@ public class SecurityConfig {
 
         @Override
         public void configure(WebSecurity web) throws Exception {
-            web.ignoring()
-                    .antMatchers("/city/**")
-                    .antMatchers("/place/**")
-                    .antMatchers("/tour/*")
-                    .antMatchers("tout/generate/*");
-
-
+            web.ignoring().anyRequest();
         }
+
 
     }
     @Order(2)
