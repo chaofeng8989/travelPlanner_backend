@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class Tour {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
     String city;
@@ -24,7 +24,7 @@ public class Tour {
 
     int duration;
 
-    @OneToMany (cascade = CascadeType.ALL)
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<OneDayTour> days = new LinkedList<>();
 
     @ElementCollection
@@ -35,13 +35,14 @@ public class Tour {
     @Entity
     @Data
     public static class OneDayTour{
-        @JoinColumn @OneToMany
+        @JoinColumn @ManyToMany (cascade = CascadeType.ALL)
+
         List<Place> placeList;
 
         @ElementCollection
         List<Integer> placeTime;
         @Id @JsonIgnore
-        @GeneratedValue
+        @GeneratedValue (strategy = GenerationType.AUTO)
         private long id;
 
     }
