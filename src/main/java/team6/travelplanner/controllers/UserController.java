@@ -1,3 +1,4 @@
+/*
 package team6.travelplanner.controllers;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class UserController {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             return ResponseEntity.badRequest().body("UserName occupied");
         }
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+//        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         log.info("user created successfully " + user.getUsername());
         return ResponseEntity.ok("User successfully created");
@@ -53,3 +54,4 @@ public class UserController {
         return ResponseEntity.ok(username + " Logged in from Third Party");
     }
 }
+*/
