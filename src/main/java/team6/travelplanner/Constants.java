@@ -10,6 +10,9 @@ public class Constants {
     public static final String GOOGLE_APIKEY = "AIzaSyB5Aextt4PuSqpd0F0_fHMY95iTZYA5OkY";
     public static final Map<String, Integer> AVERAGE_VISIT_TIME;
 
+//    public static final String AUTH_SERVER = "https://team6authserver.azurewebsites.net";
+    public static final String AUTH_SERVER = "http://localhost:9000";
+
     static {
         AVERAGE_VISIT_TIME = new HashMap<>();
         for (PlaceType type : PlaceType.values()) {
